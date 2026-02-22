@@ -13,6 +13,7 @@ import (
 	"golang/internal/repository" // Replace with your actual internal path
 	"golang/internal/usecase"
 	"golang/internal/handler"
+	"golang/internal/middleware"
 
 )
 
@@ -35,9 +36,8 @@ func Run() {
 	// 5️⃣ Initialize handler
 	userHandler := handler.NewUserHandler(userUsecase)
 
-	// 6️⃣ Register routes
-	// http.HandleFunc("/users", userHandler.GetUsers)
-	http.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
+	// 6️⃣ Register routes with middleware
+	usersBase := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			userHandler.GetUsers(w, r)
@@ -47,8 +47,10 @@ func Run() {
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
+	usersWithMw := middleware.Logging(middleware.Auth(usersBase))
+	http.Handle("/users", usersWithMw)
 
-	http.HandleFunc("/users/", func(w http.ResponseWriter, r *http.Request) {
+	userByIDBase := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			userHandler.GetUserByID(w, r)
@@ -60,10 +62,13 @@ func Run() {
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
-
-
-	// 7️⃣ Health endpoint
-	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+	userByIDWithMw := middleware.Logging(middleware.Auth(userByIDBase))
+	http.Handle("/users/", (logging only, no auth required)
+	healthHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(`{"status":"ok"}`))
+	})
+	http.Handle("/health", middleware.Logging(healthHandler)ttp.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"status":"ok"}`))
 	})
