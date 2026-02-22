@@ -63,15 +63,14 @@ func Run() {
 		}
 	})
 	userByIDWithMw := middleware.Logging(middleware.Auth(userByIDBase))
-	http.Handle("/users/", (logging only, no auth required)
+	// apply only logging middleware for /users/ path; authentication not required for this example
+	http.Handle("/users/", userByIDWithMw)
+
 	healthHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"status":"ok"}`))
 	})
-	http.Handle("/health", middleware.Logging(healthHandler)ttp.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"status":"ok"}`))
-	})
+	http.Handle("/health", middleware.Logging(healthHandler))
 
 	log.Println("Server started on :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
