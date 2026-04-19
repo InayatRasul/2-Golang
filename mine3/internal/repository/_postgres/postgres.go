@@ -20,8 +20,7 @@ type Dialect struct {
 // *sqlx.DB: This is the Value stored in that variable.
 //* (the pointer), it doesn't store the "actual" database inside the box. It stores the memory address (the link) to where the database connection is living.
 
-func NewPGXDialect(ctx context.Context, cfg *modules.PostgreConfig) *Dialect
-{
+func NewPGXDialect(ctx context.Context, cfg *modules.PostgreConfig) *Dialect{
 	// return type Dialect its address
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 	cfg.Host, cfg.Port, cfg.Username, cfg.Password, cfg.DBName, cfg.SSLMode) // Short Variable Declaration."Create a new variable named dsn and figure out its type based on what I’m putting into it."
@@ -48,8 +47,7 @@ func NewPGXDialect(ctx context.Context, cfg *modules.PostgreConfig) *Dialect
 func AutoMigrate(cfg *modules.PostgreConfig){
 	sourceURL := "file://database/migrations"
 	databaseURL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s", 
-		cfg.Username, cfg.Password, cfg.Host, cfg.Port, cfg.DBName, cfg.SSLMode
-	)
+		cfg.Username, cfg.Password, cfg.Host, cfg.Port, cfg.DBName, cfg.SSLMode)
 
 	m. err := migrate.New(sourceURL, databaseURL)
 
